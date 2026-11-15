@@ -142,7 +142,7 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     status_output = gr.Textbox(label="Stato dell'analisi", interactive=False)
     plot_output = gr.Plot(label="Partitura Prosodica Comparativa")
     
-    btn.click(fn=analizza_voce, inputs=audio_input, outputs=[plot_output, status_output])
+     btn.click(fn=analizza_voce, inputs=audio_input, outputs=[plot_output, status_output])
 
 if __name__ == "__main__":
     demo.launch()
