@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import subprocess
 
-# Carichiamo il modello di riconoscimento vocale all'avvio del sito
+# Carica il modello Whisper all'avvio
 model = whisper.load_model("base")
 
 def convert_to_wav(input_path):
@@ -38,7 +38,7 @@ def analizza_voce(audio_path):
 
     wav_filename = convert_to_wav(audio_path)
 
-    # 1. Trascrizione e tempi delle parole
+    # 1. Trascrizione e timestamp
     result = model.transcribe(wav_filename, word_timestamps=True)
     words_data = []
     for segment in result.get("segments", []):
@@ -52,7 +52,7 @@ def analizza_voce(audio_path):
     if not words_data:
         return None, "⚠️ Nessuna parola riconosciuta. Prova a parlare più vicino al microfono."
 
-    # 2. Analisi acustica (Pitch e Volume)
+    # 2. Analisi acustica
     sound = parselmouth.Sound(wav_filename)
     pitch = sound.to_pitch()
     pitch_times = pitch.xs()
@@ -82,7 +82,7 @@ def analizza_voce(audio_path):
         item["stressed"] = mean_v > (mean_int + 1.2)
         item["arrow"] = get_intonation_arrow(w_p)
 
-    # 3. Creazione Grafica stile LearnProsody
+    # 3. Creazione Grafica
     total_duration = words_data[-1]["end"] + 0.3
     fig, ax = plt.subplots(figsize=(max(11, total_duration * 3), 5.5))
 
@@ -105,7 +105,7 @@ def analizza_voce(audio_path):
         color = '#E6194B' if item["stressed"] else '#F06292'
         txt = item["word"].upper() if item["stressed"] else item["word"].lower()
 
-        # Blocco Studente (Sotto)
+        # Blocco Studente
         rect = patches.FancyBboxPatch(
             (start, y_pos - block_h/2), duration, block_h,
             boxstyle="round,pad=0.01,rounding_size=0.02",
@@ -115,7 +115,7 @@ def analizza_voce(audio_path):
         ax.text(start + duration/2, y_pos, txt, color='white', fontweight='bold', fontsize=10, ha='center', va='center', zorder=4)
         ax.text(start + duration/2, 1.25, item["arrow"], color='#E6194B', fontsize=15, fontweight='bold', ha='center', va='center')
 
-        # Blocco Modello Ideale (Sopra)
+        # Blocco Modello Ideale
         ideal_y = 1.75 + (0.3 if item["stressed"] else 0.0)
         ideal_rect = patches.FancyBboxPatch(
             (start, ideal_y - 0.1), duration, 0.2,
@@ -128,7 +128,7 @@ def analizza_voce(audio_path):
 
     ax.set_xlim(-0.15, total_duration)
     ax.set_ylim(0, 2.65)
-    ax.set_xlabel("Tempo (secondi)", fontsize=10)
+    ax.set_xlabel("Tempo (seconds)", fontsize=10)
     ax.set_yticks([])
     for spine in ['top', 'right', 'left']:
         ax.spines[spine].set_visible(False)
@@ -137,10 +137,10 @@ def analizza_voce(audio_path):
     frase_riconosciuta = " ".join([w["word"] for w in words_data])
     return fig, f"✅ Frase analizzata: «{frase_riconosciuta}»"
 
-# Costruzione dell'interfaccia grafica del sito web
+# Interfaccia grafica (Tutto deve essere indentato qui dentro)
 with gr.Blocks(theme=gr.themes.Soft()) as demo:
     gr.Markdown("# 🎵 Laboratorio di Prosodia Inglese")
-    gr.Markdown("Registra la tua voce dal microfono dello smartphone o del PC per visualizzare **stress, durata e intonazione** confrontati con il modello ideale.")
+    gr.Markdown("Registra la tua voce per visualizzare stress, durata e intonazione confrontati con il modello ideale.")
     
     with gr.Row():
         audio_input = gr.Audio(sources=["microphone", "upload"], type="filepath", label="🎤 Registra o carica la frase in inglese")
