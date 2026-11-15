@@ -144,5 +144,5 @@ with gr.Blocks(theme=gr.themes.Soft()) as demo:
     
     btn.click(fn=analizza_voce, inputs=audio_input, outputs=[plot_output, status_output])
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     demo.launch()
