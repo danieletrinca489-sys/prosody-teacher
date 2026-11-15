@@ -1,0 +1,6 @@
+openai-whisper
+praat-parselmouth
+matplotlib
+numpy
+torch
+gradio
